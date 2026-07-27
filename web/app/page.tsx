@@ -58,7 +58,7 @@ function StatusCard({
 }: {
   name: string;
   detail: string;
-  state: "up" | "down" | "unknown";
+  state: CardState;
 }) {
   const color =
     state === "up"
@@ -104,28 +104,49 @@ function StatusCard({
   );
 }
 
+type CardState = "up" | "down" | "unknown";
+
+interface StackView {
+  gateway: CardState;
+  db: CardState;
+  aiService: CardState;
+  headline: string;
+  headlineColor: string;
+}
+
+function deriveView(status: StackStatus): StackView {
+  switch (status.kind) {
+    case "loading":
+      return {
+        gateway: "unknown",
+        db: "unknown",
+        aiService: "unknown",
+        headline: "Checking stack…",
+        headlineColor: "var(--pending)",
+      };
+    case "gateway-unreachable":
+      return {
+        gateway: "down",
+        db: "unknown",
+        aiService: "unknown",
+        headline: "Gateway unreachable",
+        headlineColor: "var(--down)",
+      };
+    case "reported": {
+      const ok = status.report.status === "ok";
+      return {
+        gateway: "up",
+        db: status.report.checks.db,
+        aiService: status.report.checks.aiService,
+        headline: ok ? "All systems up" : "Stack degraded",
+        headlineColor: ok ? "var(--up)" : "var(--down)",
+      };
+    }
+  }
+}
+
 export default function HomePage() {
-  const status = useStackStatus();
-
-  const gatewayState =
-    status.kind === "loading"
-      ? "unknown"
-      : status.kind === "gateway-unreachable"
-        ? "down"
-        : "up";
-  const dbState =
-    status.kind === "reported" ? status.report.checks.db : "unknown";
-  const aiState =
-    status.kind === "reported" ? status.report.checks.aiService : "unknown";
-
-  const headline =
-    status.kind === "loading"
-      ? "Checking stack…"
-      : status.kind === "gateway-unreachable"
-        ? "Gateway unreachable"
-        : status.report.status === "ok"
-          ? "All systems up"
-          : "Stack degraded";
+  const view = deriveView(useStackStatus());
 
   return (
     <main
@@ -153,15 +174,10 @@ export default function HomePage() {
         style={{
           fontSize: 18,
           fontWeight: 600,
-          color:
-            status.kind === "reported" && status.report.status === "ok"
-              ? "var(--up)"
-              : status.kind === "loading"
-                ? "var(--pending)"
-                : "var(--down)",
+          color: view.headlineColor,
         }}
       >
-        {headline}
+        {view.headline}
       </div>
 
       <section
@@ -172,17 +188,17 @@ export default function HomePage() {
         <StatusCard
           name="Gateway"
           detail="NestJS API — auth, sessions, persistence"
-          state={gatewayState}
+          state={view.gateway}
         />
         <StatusCard
           name="Database"
           detail="Postgres, reported via gateway health check"
-          state={dbState}
+          state={view.db}
         />
         <StatusCard
           name="AI Service"
           detail="Python LLM orchestration, reported via gateway"
-          state={aiState}
+          state={view.aiService}
         />
       </section>
     </main>
