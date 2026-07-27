@@ -1,5 +1,5 @@
-import { Injectable, OnModuleDestroy } from "@nestjs/common";
-import { Pool } from "pg";
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
 
 export type CheckResult = "up" | "down";
 
@@ -11,17 +11,11 @@ export interface HealthReport {
   };
 }
 
-const CHECK_TIMEOUT_MS = 2_000;
+const AI_SERVICE_TIMEOUT_MS = 2_000;
 
 @Injectable()
-export class HealthService implements OnModuleDestroy {
-  private readonly pool = new Pool({
-    connectionString:
-      process.env.DATABASE_URL ??
-      "postgres://postgres:postgres@localhost:5432/interview",
-    connectionTimeoutMillis: CHECK_TIMEOUT_MS,
-    query_timeout: CHECK_TIMEOUT_MS,
-  });
+export class HealthService {
+  constructor(private readonly prisma: PrismaService) {}
 
   private readonly aiServiceUrl =
     process.env.AI_SERVICE_URL ?? "http://localhost:8000";
@@ -39,7 +33,7 @@ export class HealthService implements OnModuleDestroy {
 
   private async checkDb(): Promise<CheckResult> {
     try {
-      await this.pool.query("SELECT 1");
+      await this.prisma.$queryRaw`SELECT 1`;
       return "up";
     } catch {
       return "down";
@@ -49,15 +43,11 @@ export class HealthService implements OnModuleDestroy {
   private async checkAiService(): Promise<CheckResult> {
     try {
       const response = await fetch(`${this.aiServiceUrl}/health`, {
-        signal: AbortSignal.timeout(CHECK_TIMEOUT_MS),
+        signal: AbortSignal.timeout(AI_SERVICE_TIMEOUT_MS),
       });
       return response.ok ? "up" : "down";
     } catch {
       return "down";
     }
-  }
-
-  async onModuleDestroy(): Promise<void> {
-    await this.pool.end();
   }
 }

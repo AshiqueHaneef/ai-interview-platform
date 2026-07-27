@@ -2,8 +2,10 @@ FROM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
-COPY tsconfig.json ./
+COPY tsconfig.json prisma.config.ts ./
+COPY prisma ./prisma
 COPY src ./src
+# npm run build = prisma generate (into src/generated) + tsc
 RUN npm run build
 
 FROM node:22-alpine

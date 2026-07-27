@@ -1,16 +1,21 @@
+# Reads variables from ./.env (copy .env.example to .env); defaults below match it.
 services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: interview
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-interview}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d interview"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-interview}",
+        ]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -18,16 +23,17 @@ services:
   ai-service:
     build: ./ai-service
     ports:
-      - "8000:8000"
+      - "${AI_SERVICE_PORT:-8000}:8000"
 
   gateway:
     build: ./gateway
     environment:
       PORT: "3001"
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/interview
+      # In-network URLs — service names, not the localhost values from gateway/.env
+      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-interview}
       AI_SERVICE_URL: http://ai-service:8000
     ports:
-      - "3001:3001"
+      - "${GATEWAY_PORT:-3001}:3001"
     depends_on:
       postgres:
         condition: service_healthy
@@ -37,7 +43,7 @@ services:
   web:
     build: ./web
     ports:
-      - "3000:3000"
+      - "${WEB_PORT:-3000}:3000"
     depends_on:
       - gateway
 

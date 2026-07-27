@@ -1,0 +1,11 @@
+// Walking skeleton: no models yet — the domain schema (users, questions,
+// sessions, turns, scores) arrives with later issues via `prisma migrate`.
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
