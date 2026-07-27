@@ -4,6 +4,7 @@ dist/
 .next/
 next-env.d.ts
 *.tsbuildinfo
+gateway/src/generated/
 __pycache__/
 .venv/
 .env

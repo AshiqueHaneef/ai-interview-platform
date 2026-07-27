@@ -14,6 +14,24 @@ Four components (ADR 0001):
 - **ai-service** — Python/FastAPI: stateless LLM orchestration, no DB access (port 8000)
 - **postgres** — the only datastore (port 5432)
 
+## Configuration
+
+Each component reads a `.env` file; committed `.env.example` files carry
+working local-dev values:
+
+- `./.env` — Docker Compose variables (Postgres credentials, published ports)
+- `gateway/.env` — `DATABASE_URL`, `AI_SERVICE_URL`, `PORT` for local (non-Docker) dev; also read by the Prisma CLI
+- `web/.env` — `NEXT_PUBLIC_GATEWAY_URL` (build-time, used by the browser)
+
+```sh
+cp .env.example .env
+cp gateway/.env.example gateway/.env
+cp web/.env.example web/.env
+```
+
+`.env` files are gitignored and excluded from Docker images; inside Compose the
+gateway gets container-network URLs from `docker-compose.yml` directly.
+
 ## Run the stack
 
 ```sh
@@ -39,10 +57,20 @@ npm test --prefix tests/integration
 
 (First time: `npm install --prefix tests/integration`.)
 
+## Database (Prisma)
+
+The gateway uses [Prisma ORM](https://www.prisma.io) (v7, `@prisma/adapter-pg`
+driver adapter). The schema lives in `gateway/prisma/schema.prisma` (no models
+yet — the domain schema arrives with later issues). Common commands, run from
+`gateway/`:
+
+- `npm run prisma:generate` — regenerate the client (into `src/generated/prisma`, gitignored; `npm run build` does this automatically)
+- `npm run prisma:migrate` — create/apply migrations once models exist
+
 ## Local development
 
-Each component also runs directly:
+Each component also runs directly (after the `.env` copy step above):
 
-- `gateway`: `npm install && npm run build && npm start` (needs `DATABASE_URL`, `AI_SERVICE_URL`)
+- `gateway`: `npm install && npm run build && npm start`
 - `ai-service`: `pip install -r requirements.txt && uvicorn app.main:app --port 8000`
-- `web`: `npm install && npm run dev` (needs `NEXT_PUBLIC_GATEWAY_URL`, defaults to `http://localhost:3001`)
+- `web`: `npm install && npm run dev`
