@@ -1,0 +1,11 @@
+{
+  "name": "integration-tests",
+  "private": true,
+  "description": "Seam-1 integration tests: drive the gateway's client-facing HTTP API against the booted stack.",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}
