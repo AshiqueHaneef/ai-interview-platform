@@ -11,7 +11,7 @@ export interface HealthReport {
   };
 }
 
-const AI_SERVICE_TIMEOUT_MS = 2_000;
+const CHECK_TIMEOUT_MS = 2_000;
 
 @Injectable()
 export class HealthService implements OnModuleDestroy {
@@ -19,6 +19,8 @@ export class HealthService implements OnModuleDestroy {
     connectionString:
       process.env.DATABASE_URL ??
       "postgres://postgres:postgres@localhost:5432/interview",
+    connectionTimeoutMillis: CHECK_TIMEOUT_MS,
+    query_timeout: CHECK_TIMEOUT_MS,
   });
 
   private readonly aiServiceUrl =
@@ -47,7 +49,7 @@ export class HealthService implements OnModuleDestroy {
   private async checkAiService(): Promise<CheckResult> {
     try {
       const response = await fetch(`${this.aiServiceUrl}/health`, {
-        signal: AbortSignal.timeout(AI_SERVICE_TIMEOUT_MS),
+        signal: AbortSignal.timeout(CHECK_TIMEOUT_MS),
       });
       return response.ok ? "up" : "down";
     } catch {
