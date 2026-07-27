@@ -1,0 +1,23 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0b0e14;
+  --card: #141924;
+  --border: #232a3a;
+  --text: #e6e9f0;
+  --muted: #8b93a7;
+  --up: #34d399;
+  --down: #f87171;
+  --pending: #fbbf24;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  min-height: 100vh;
+}

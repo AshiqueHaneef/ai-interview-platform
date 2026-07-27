@@ -1,1 +1,9 @@
 .DS_Store
+node_modules/
+dist/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+__pycache__/
+.venv/
+.env

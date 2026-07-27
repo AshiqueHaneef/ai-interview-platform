@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: interview
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d interview"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  ai-service:
+    build: ./ai-service
+    ports:
+      - "8000:8000"
+
+  gateway:
+    build: ./gateway
+    environment:
+      PORT: "3001"
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/interview
+      AI_SERVICE_URL: http://ai-service:8000
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ai-service:
+        condition: service_started
+
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - gateway
+
+volumes:
+  pgdata:
