@@ -46,6 +46,23 @@ reports DB and AI-service reachability:
 { "status": "ok", "checks": { "db": "up", "aiService": "up" } }
 ```
 
+## Auth
+
+Sign up or log in at http://localhost:3000/login; `/dashboard` is behind auth
+and redirects there when the Candidate isn't authenticated. The gateway issues
+a signed, httpOnly `credential` cookie (ADR 0003) and exposes:
+
+| Route              | Purpose                                       |
+| ------------------ | --------------------------------------------- |
+| `POST /auth/signup` | Create an account and authenticate            |
+| `POST /auth/login`  | Authenticate an existing Candidate            |
+| `POST /auth/logout` | Revoke the credential                         |
+| `GET /auth/me`      | The current Candidate, or 401                 |
+
+`AUTH_SECRET` signs the cookie and is required — the gateway refuses to boot
+without it. Generate one per environment with `openssl rand -hex 32`.
+Schema changes run through Prisma: `npm run prisma:migrate --prefix gateway`.
+
 ## Integration tests (seam 1)
 
 The integration harness drives the gateway's client-facing HTTP API against the

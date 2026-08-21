@@ -6,6 +6,7 @@
   "scripts": {
     "build": "prisma generate && tsc -p tsconfig.json",
     "start": "node dist/main.js",
+    "start:migrated": "prisma migrate deploy && node dist/main.js",
     "typecheck": "prisma generate && tsc --noEmit",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
@@ -16,16 +17,19 @@
     "@nestjs/platform-express": "^11.1.0",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "pg": "^8.22.0",
+    "prisma": "^7.9.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.0",
     "@types/node": "^22.15.0",
     "@types/pg": "^8.20.0",
-    "prisma": "^7.9.1",
     "typescript": "^5.8.0"
   }
 }

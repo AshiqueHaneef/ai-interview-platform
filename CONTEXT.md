@@ -38,6 +38,14 @@ _Avoid_: Message pair, round
 The ordered record of all Turns in a Session. The raw material for scoring and replay.
 _Avoid_: Log, history
 
+**Candidate**:
+The person being interviewed — the authenticated account behind every Session. One email/password login.
+_Avoid_: User (reserved for the database row), account holder
+
+**Credential**:
+The signed, httpOnly cookie that authenticates a Candidate across requests. Never called a session — a Session is one mock interview.
+_Avoid_: Session, token, login
+
 ### Scoring
 
 **Rubric**:
