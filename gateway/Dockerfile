@@ -14,6 +14,9 @@ ENV NODE_ENV=production
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 COPY --from=build /app/dist ./dist
+# The container owns its schema: migrations are applied before the app boots.
+COPY prisma.config.ts ./
+COPY prisma ./prisma
 
 EXPOSE 3001
-CMD ["node", "dist/main.js"]
+CMD ["npm", "run", "start:migrated"]

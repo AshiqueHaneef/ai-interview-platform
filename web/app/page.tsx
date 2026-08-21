@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const GATEWAY_URL =
@@ -159,14 +160,38 @@ export default function HomePage() {
         gap: 24,
       }}
     >
-      <header>
-        <h1 style={{ fontSize: 28, fontWeight: 700 }}>
-          AI Interview Platform
-        </h1>
-        <p style={{ color: "var(--muted)", marginTop: 8 }}>
-          Walking skeleton — live system status, refreshed every{" "}
-          {POLL_INTERVAL_MS / 1000}s.
-        </p>
+      <header
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          gap: 16,
+        }}
+      >
+        <div>
+          <h1 style={{ fontSize: 28, fontWeight: 700 }}>
+            AI Interview Platform
+          </h1>
+          <p style={{ color: "var(--muted)", marginTop: 8 }}>
+            Walking skeleton — live system status, refreshed every{" "}
+            {POLL_INTERVAL_MS / 1000}s.
+          </p>
+        </div>
+        <Link
+          href="/dashboard"
+          style={{
+            background: "var(--card)",
+            border: "1px solid var(--border)",
+            borderRadius: 10,
+            padding: "9px 14px",
+            color: "var(--text)",
+            fontSize: 14,
+            textDecoration: "none",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Dashboard
+        </Link>
       </header>
 
       <div

@@ -1,5 +1,5 @@
-// Walking skeleton: no models yet — the domain schema (users, questions,
-// sessions, turns, scores) arrives with later issues via `prisma migrate`.
+// The rest of the domain schema (questions, sessions, turns, scores) arrives
+// with later issues via `prisma migrate`.
 generator client {
   provider     = "prisma-client"
   output       = "../src/generated/prisma"
@@ -8,4 +8,13 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("users")
 }
