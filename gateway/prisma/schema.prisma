@@ -1,5 +1,5 @@
-// The rest of the domain schema (questions, sessions, turns, scores) arrives
-// with later issues via `prisma migrate`.
+// The rest of the domain schema (sessions, turns, scores) arrives with later
+// issues via `prisma migrate`.
 generator client {
   provider     = "prisma-client"
   output       = "../src/generated/prisma"
@@ -17,4 +17,33 @@ model User {
   createdAt    DateTime @default(now()) @map("created_at")
 
   @@map("users")
+}
+
+enum InterviewType {
+  system_design
+  behavioral
+
+  @@map("interview_type")
+}
+
+enum Difficulty {
+  junior
+  mid
+  senior
+
+  @@map("difficulty")
+}
+
+model Question {
+  // The seed file's stable natural key — re-seeding upserts on this, so
+  // reworded prompts update in place instead of duplicating.
+  slug          String        @id
+  interviewType InterviewType @map("interview_type")
+  prompt        String
+  topicTags     String[]      @map("topic_tags")
+  difficulty    Difficulty
+  rubricHint    String        @map("rubric_hint")
+
+  @@index([interviewType])
+  @@map("questions")
 }

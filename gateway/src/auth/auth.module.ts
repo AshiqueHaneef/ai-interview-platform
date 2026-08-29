@@ -7,5 +7,7 @@ import { AuthService } from "./auth.service";
   imports: [PrismaModule],
   controllers: [AuthController],
   providers: [AuthService],
+  // AuthGuard resolves AuthService, so any module guarding its routes needs it.
+  exports: [AuthService],
 })
 export class AuthModule {}

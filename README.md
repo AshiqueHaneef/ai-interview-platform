@@ -63,6 +63,28 @@ a signed, httpOnly `credential` cookie (ADR 0003) and exposes:
 without it. Generate one per environment with `openssl rand -hex 32`.
 Schema changes run through Prisma: `npm run prisma:migrate --prefix gateway`.
 
+## Question Bank
+
+The Bank is curated and versioned in the repo at
+`gateway/prisma/seed/questions.json` — 20 seed Questions across both Interview
+Types. Adding a Question means adding an entry there; the seed is keyed by slug
+and upserts, so re-running it changes nothing that hasn't been edited:
+
+```sh
+npm run seed --prefix gateway
+```
+
+`docker compose up` runs migrations and the seed before the gateway starts, so
+a fresh clone comes up with a populated Bank.
+
+| Route             | Purpose                                                  |
+| ----------------- | -------------------------------------------------------- |
+| `GET /questions`  | Browse the Bank; `?interviewType=` and `?topic=` filter   |
+
+Browsing is behind auth, and the response withholds each Question's Rubric
+Hint — it describes what a strong answer covers, so a Candidate must not see
+it. The web page is at http://localhost:3000/questions.
+
 ## Integration tests (seam 1)
 
 The integration harness drives the gateway's client-facing HTTP API against the
@@ -77,9 +99,9 @@ npm test --prefix tests/integration
 ## Database (Prisma)
 
 The gateway uses [Prisma ORM](https://www.prisma.io) (v7, `@prisma/adapter-pg`
-driver adapter). The schema lives in `gateway/prisma/schema.prisma` (no models
-yet — the domain schema arrives with later issues). Common commands, run from
-`gateway/`:
+driver adapter). The schema lives in `gateway/prisma/schema.prisma` and
+currently holds `User` and `Question`; the rest of the domain arrives with later
+issues. Common commands, run from `gateway/`:
 
 - `npm run prisma:generate` — regenerate the client (into `src/generated/prisma`, gitignored; `npm run build` does this automatically)
 - `npm run prisma:migrate` — create/apply migrations once models exist

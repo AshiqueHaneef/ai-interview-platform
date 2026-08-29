@@ -26,6 +26,14 @@ _Avoid_: Prompt (reserved for LLM prompts), task
 The curated, owned set of Questions (~60–100 seed). Not scraped, not LLM-generated in v1.
 _Avoid_: Dataset, corpus
 
+**Difficulty**:
+The seniority a Question is pitched at — `junior`, `mid`, or `senior`. It describes the Question as authored, not how well a Candidate did on it, and never changes in response to a Session.
+_Avoid_: Level, tier, easy/medium/hard
+
+**Topic Tag**:
+A free-form subject label on a Question (`caching`, `conflict`, `sharding`). A Question carries several; they drive browsing and, later, Weak Area rollups.
+_Avoid_: Category, label, skill
+
 **Follow-up**:
 A probing question the Interviewer generates in reaction to the candidate's answer, within the same Question.
 _Avoid_: Sub-question

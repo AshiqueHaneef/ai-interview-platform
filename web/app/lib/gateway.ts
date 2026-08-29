@@ -69,6 +69,56 @@ export async function fetchCurrentCandidate(): Promise<Candidate | null> {
   }
 }
 
+export type InterviewType = "system_design" | "behavioral";
+export type Difficulty = "junior" | "mid" | "senior";
+
+export interface Question {
+  slug: string;
+  interviewType: InterviewType;
+  prompt: string;
+  topicTags: string[];
+  difficulty: Difficulty;
+}
+
+export interface QuestionFilters {
+  interviewType?: InterviewType | "";
+  topic?: string;
+}
+
+export type BrowseOutcome =
+  | { ok: true; questions: Question[] }
+  | { ok: false; unauthenticated: boolean; message: string };
+
+export async function fetchQuestions({
+  interviewType,
+  topic,
+}: QuestionFilters): Promise<BrowseOutcome> {
+  const query = new URLSearchParams();
+  if (interviewType) query.set("interviewType", interviewType);
+  if (topic) query.set("topic", topic);
+  const suffix = query.size > 0 ? `?${query}` : "";
+
+  let response: Response;
+  try {
+    response = await fetch(`${GATEWAY_URL}/questions${suffix}`, CREDENTIALED);
+  } catch {
+    return {
+      ok: false,
+      unauthenticated: false,
+      message: "Can't reach the gateway.",
+    };
+  }
+
+  if (!response.ok) {
+    return {
+      ok: false,
+      unauthenticated: response.status === 401,
+      message: await readMessage(response),
+    };
+  }
+  return { ok: true, questions: (await response.json()) as Question[] };
+}
+
 export async function logOut(): Promise<void> {
   await fetch(`${GATEWAY_URL}/auth/logout`, {
     ...CREDENTIALED,

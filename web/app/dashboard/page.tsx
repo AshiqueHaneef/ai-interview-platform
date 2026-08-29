@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Candidate, fetchCurrentCandidate, logOut } from "../lib/gateway";
@@ -95,6 +96,21 @@ export default function DashboardPage() {
           Starting a Session, score trends, and Weak Areas arrive with the next
           issues. This shell exists to prove the app is behind auth.
         </p>
+        <Link
+          href="/questions"
+          style={{
+            display: "inline-block",
+            marginTop: 16,
+            color: "var(--text)",
+            border: "1px solid var(--border)",
+            borderRadius: 10,
+            padding: "9px 14px",
+            fontSize: 14,
+            textDecoration: "none",
+          }}
+        >
+          Browse the Question Bank →
+        </Link>
       </section>
     </main>
   );

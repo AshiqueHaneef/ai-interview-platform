@@ -1,0 +1,162 @@
+[
+  {
+    "slug": "design-a-url-shortener",
+    "interviewType": "system_design",
+    "prompt": "Design a URL shortener like bit.ly. Users paste a long URL and get a short one back; anyone hitting the short link is redirected.",
+    "topicTags": ["hashing", "key-value-store", "caching", "read-heavy"],
+    "difficulty": "junior",
+    "rubricHint": "A strong answer pins down read:write ratio early (reads dominate by orders of magnitude), picks a key generation strategy and defends it against collisions, and reaches for a cache in front of the redirect path. Depth shows up in discussing custom aliases, link expiry, and what happens when the key space fills up."
+  },
+  {
+    "slug": "design-a-rate-limiter",
+    "interviewType": "system_design",
+    "prompt": "Design a rate limiter that caps each API client to N requests per minute across a fleet of application servers.",
+    "topicTags": ["distributed-systems", "redis", "algorithms", "api-design"],
+    "difficulty": "mid",
+    "rubricHint": "Look for a named algorithm (token bucket, sliding window log, sliding window counter) with its memory and accuracy trade-offs stated. The distributed part is the real test: a per-server counter is wrong, so the candidate should reach for shared state and then confront its latency and failure modes — including what to do when the limiter itself is unavailable."
+  },
+  {
+    "slug": "design-a-news-feed",
+    "interviewType": "system_design",
+    "prompt": "Design the news feed for a social network: each user sees a ranked feed of posts from the people they follow.",
+    "topicTags": ["fan-out", "caching", "ranking", "read-heavy"],
+    "difficulty": "senior",
+    "rubricHint": "The core trade-off is fan-out on write versus fan-out on read. A strong answer explains why neither wins outright and proposes a hybrid that treats celebrity accounts differently. Depth shows in feed ranking, pagination that stays stable as new posts arrive, and the storage cost of materialised feeds."
+  },
+  {
+    "slug": "design-a-chat-application",
+    "interviewType": "system_design",
+    "prompt": "Design a real-time one-to-one and group chat service with delivery receipts and offline message delivery.",
+    "topicTags": ["websockets", "messaging", "storage", "real-time"],
+    "difficulty": "mid",
+    "rubricHint": "Expect persistent connections (WebSocket) with a clear story for which server holds a given user's connection and how a message reaches it. Strong answers separate message durability from delivery, handle the offline case with a per-recipient inbox, and address ordering within a conversation."
+  },
+  {
+    "slug": "design-a-web-crawler",
+    "interviewType": "system_design",
+    "prompt": "Design a web crawler that fetches and indexes a large portion of the public web, refreshing pages as they change.",
+    "topicTags": ["queues", "distributed-systems", "storage", "politeness"],
+    "difficulty": "senior",
+    "rubricHint": "A strong answer treats the frontier as the central data structure, handles politeness and robots.txt per domain, and dedupes both URLs and content. Depth shows in re-crawl scheduling driven by observed change rate, trap detection, and how the crawl is partitioned across machines without hammering one host."
+  },
+  {
+    "slug": "design-a-file-storage-service",
+    "interviewType": "system_design",
+    "prompt": "Design a file storage and sync service like Dropbox: files sync across a user's devices and can be shared.",
+    "topicTags": ["storage", "sync", "chunking", "consistency"],
+    "difficulty": "senior",
+    "rubricHint": "Chunking is the key insight — it makes deduplication and delta sync possible, and a candidate who uploads whole files has missed it. Strong answers separate metadata from block storage, and confront conflict resolution when two devices edit offline."
+  },
+  {
+    "slug": "design-a-ride-hailing-service",
+    "interviewType": "system_design",
+    "prompt": "Design the matching system for a ride-hailing app: riders request rides and are matched to nearby drivers in real time.",
+    "topicTags": ["geospatial", "matching", "real-time", "state-machines"],
+    "difficulty": "senior",
+    "rubricHint": "Geospatial indexing (geohash, quadtree, S2) is the expected core, along with the high write rate of driver location updates. Strong answers treat matching as a state machine with timeouts and driver rejection, and avoid double-assigning one driver to two riders."
+  },
+  {
+    "slug": "design-a-notification-system",
+    "interviewType": "system_design",
+    "prompt": "Design a notification service that delivers push, email, and SMS across many product teams, respecting user preferences.",
+    "topicTags": ["queues", "fan-out", "third-party-apis", "reliability"],
+    "difficulty": "mid",
+    "rubricHint": "Expect a queue decoupling producers from per-channel senders, with retries and dead-lettering around unreliable third parties. Strong answers handle deduplication and idempotency so a retry doesn't double-send, and enforce user preferences and rate caps centrally rather than per team."
+  },
+  {
+    "slug": "design-a-search-autocomplete",
+    "interviewType": "system_design",
+    "prompt": "Design the autocomplete that suggests queries as a user types into a search box.",
+    "topicTags": ["tries", "caching", "ranking", "low-latency"],
+    "difficulty": "mid",
+    "rubricHint": "The latency budget drives everything — a strong answer states one (tens of milliseconds) and designs backwards from it, precomputing top suggestions per prefix rather than ranking at request time. Depth shows in how the suggestion index is rebuilt from query logs and how stale or offensive suggestions are kept out."
+  },
+  {
+    "slug": "design-a-metrics-monitoring-system",
+    "interviewType": "system_design",
+    "prompt": "Design a metrics and alerting system that ingests time-series data from thousands of services and alerts on thresholds.",
+    "topicTags": ["time-series", "aggregation", "storage", "write-heavy"],
+    "difficulty": "senior",
+    "rubricHint": "This is a write-heavy problem, which should push the candidate away from a general-purpose row store toward a time-series design with downsampling and retention tiers. Strong answers address cardinality explosion from labels, and evaluate alert rules without rescanning raw data."
+  },
+  {
+    "slug": "design-a-payment-system",
+    "interviewType": "system_design",
+    "prompt": "Design a payment system that charges customers via an external processor and keeps an auditable ledger.",
+    "topicTags": ["consistency", "idempotency", "ledger", "third-party-apis"],
+    "difficulty": "senior",
+    "rubricHint": "Correctness beats throughput here. Look for idempotency keys so a retried charge doesn't double-bill, a double-entry ledger as the source of truth, and reconciliation against the processor. Strong answers name the failure window where the processor succeeded but the response was lost, and say how it's resolved."
+  },
+  {
+    "slug": "design-a-video-streaming-service",
+    "interviewType": "system_design",
+    "prompt": "Design a video streaming service: creators upload video, viewers stream it smoothly on varying connections.",
+    "topicTags": ["cdn", "transcoding", "storage", "pipelines"],
+    "difficulty": "mid",
+    "rubricHint": "Expect the upload path and the playback path to be designed separately: an asynchronous transcoding pipeline producing multiple bitrates, and adaptive bitrate streaming from a CDN. Strong answers explain why the origin must not serve viewers directly and how a long transcode reports progress or failure."
+  },
+  {
+    "slug": "behavioral-hardest-technical-problem",
+    "interviewType": "behavioral",
+    "prompt": "Tell me about the hardest technical problem you've solved. What made it hard, and how did you approach it?",
+    "topicTags": ["problem-solving", "technical-depth", "ownership"],
+    "difficulty": "junior",
+    "rubricHint": "Strong answers make the difficulty concrete and technical rather than just describing effort, and show a diagnostic method instead of trial and error. Watch for a clear statement of what the candidate personally did, and a result the interviewer can picture."
+  },
+  {
+    "slug": "behavioral-disagreed-with-a-decision",
+    "interviewType": "behavioral",
+    "prompt": "Describe a time you disagreed with a technical decision your team or manager made. What did you do?",
+    "topicTags": ["conflict", "influence", "communication"],
+    "difficulty": "mid",
+    "rubricHint": "Look for disagreement expressed through evidence rather than escalation, and for the candidate committing to the outcome once decided. The strongest answers include what the other side's reasoning actually was — a candidate who can't state it wasn't really listening. Reflection should acknowledge what they'd argue differently."
+  },
+  {
+    "slug": "behavioral-shipped-something-that-broke",
+    "interviewType": "behavioral",
+    "prompt": "Tell me about a time you shipped something that broke in production. What happened and what did you do?",
+    "topicTags": ["ownership", "incident-response", "learning"],
+    "difficulty": "mid",
+    "rubricHint": "Ownership is the axis under test: strong answers take responsibility without theatrics and separate mitigation from root-cause fixing. Look for a durable systemic change — a test, an alert, a guardrail — rather than 'I was more careful afterwards'. Blame directed outward is the main failure mode."
+  },
+  {
+    "slug": "behavioral-missed-a-deadline",
+    "interviewType": "behavioral",
+    "prompt": "Tell me about a project that slipped or that you had to descope. How did you handle it?",
+    "topicTags": ["planning", "communication", "prioritisation"],
+    "difficulty": "mid",
+    "rubricHint": "Strong answers surface the slip early to the people affected rather than at the deadline, and show explicit trade-off reasoning about what to cut. Look for specifics about the estimate that was wrong and why. Reflection should change how they estimate, not just promise to work harder."
+  },
+  {
+    "slug": "behavioral-influenced-without-authority",
+    "interviewType": "behavioral",
+    "prompt": "Describe a time you got a group to adopt an approach when you had no authority over them.",
+    "topicTags": ["influence", "leadership", "communication"],
+    "difficulty": "senior",
+    "rubricHint": "Look for influence built from a prototype, data, or a pilot rather than argument alone, and for adapting the pitch to what each audience cared about. Strong answers name the resistance honestly and show it being addressed. Impact should be measured in adoption, not in the proposal being written."
+  },
+  {
+    "slug": "behavioral-mentored-someone",
+    "interviewType": "behavioral",
+    "prompt": "Tell me about a time you helped another engineer grow. What did you do differently for them?",
+    "topicTags": ["mentorship", "leadership", "empathy"],
+    "difficulty": "senior",
+    "rubricHint": "Strong answers diagnose what that specific person needed instead of applying a generic playbook, and show restraint — coaching rather than taking the work over. Impact is the other engineer's changed capability, described concretely. Reflection should include something the candidate got wrong in how they helped."
+  },
+  {
+    "slug": "behavioral-received-critical-feedback",
+    "interviewType": "behavioral",
+    "prompt": "Tell me about a piece of critical feedback you received. How did you react, and what changed?",
+    "topicTags": ["self-awareness", "growth", "feedback"],
+    "difficulty": "junior",
+    "rubricHint": "The test is whether the feedback was genuinely uncomfortable — a humblebrag ('I care too much') is the common dodge. Strong answers state the feedback in the giver's words, admit the initial reaction honestly, and point to a specific behaviour change with evidence it stuck."
+  },
+  {
+    "slug": "behavioral-competing-priorities",
+    "interviewType": "behavioral",
+    "prompt": "Describe a time you had several important things demanding your attention at once. How did you decide what to do?",
+    "topicTags": ["prioritisation", "communication", "ownership"],
+    "difficulty": "junior",
+    "rubricHint": "Look for an explicit basis for the decision — impact, reversibility, who is blocked — rather than working longer hours. Strong answers renegotiate expectations with stakeholders instead of silently dropping something, and state what was consciously not done."
+  }
+]
